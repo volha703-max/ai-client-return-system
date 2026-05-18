@@ -1,8 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=landing.html">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мои проекты</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #020d0d;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #e0fff8;
+    overflow-x: hidden;
+  }
+
+  canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(90px);
+    opacity: .35; pointer-events: none; z-index: 0;
+  }
+  .b1 { width: 520px; height: 520px; background: #005544; top: -120px; left: -120px; }
+  .b2 { width: 420px; height: 420px; background: #003366; bottom: -80px; right: -80px; }
+  .b3 { width: 300px; height: 300px; background: #00442a; top: 50%; left: 55%; }
+
+  .page {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 20px 80px;
+  }
+
+  .title {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800; letter-spacing: .02em;
+    background: linear-gradient(120deg, #00e5c3, #00ff88 45%, #0099ff 80%, #00e5c3);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: rgba(0,229,195,.6);
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 60px;
+    letter-spacing: .04em;
+  }
+
+  @keyframes shimmer { to { background-position: 200% center; } }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .card {
+    background: rgba(0,229,195,.04);
+    border: 1px solid rgba(0,229,195,.15);
+    border-radius: 20px;
+    padding: 36px 32px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, border-color .3s;
+    backdrop-filter: blur(8px);
+  }
+  .card:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: rgba(0,229,195,.5);
+    box-shadow: 0 20px 48px rgba(0,229,195,.12);
+  }
+
+  .card-icon { font-size: 2.4rem; line-height: 1; }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(120deg, #00e5c3, #00ff88);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-desc {
+    font-size: .93rem;
+    color: rgba(224,255,248,.55);
+    line-height: 1.6;
+  }
+
+  .card-link {
+    margin-top: auto;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .85rem;
+    color: #00e5c3;
+    opacity: .7;
+    transition: opacity .2s;
+  }
+  .card:hover .card-link { opacity: 1; }
+</style>
 </head>
-<body></body>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<canvas id="cvs"></canvas>
+
+<div class="page">
+  <h1 class="title">Мои проекты</h1>
+  <p class="subtitle">Всё в одном месте — кликайте и смотрите</p>
+
+  <div class="grid">
+
+    <a class="card" href="vizitka.html">
+      <div class="card-icon">💼</div>
+      <div class="card-title">Визитка</div>
+      <div class="card-desc">Личная цифровая визитная карточка с голографическим дизайном и анимацией.</div>
+      <span class="card-link">Открыть →</span>
+    </a>
+
+    <a class="card" href="landing.html">
+      <div class="card-icon">🧮</div>
+      <div class="card-title">Умные калькуляторы</div>
+      <div class="card-desc">Лендинг по разработке умных калькуляторов для бизнеса.</div>
+      <span class="card-link">Открыть →</span>
+    </a>
+
+  </div>
+</div>
+
+<script>
+  const cvs = document.getElementById('cvs');
+  const ctx = cvs.getContext('2d');
+  let W, H;
+  function resize() { W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  const SYMBOLS = ['$','%','+','−','×','÷','=','∑','√','π','∞','€','₽','#','∫','Δ','≈','≠','²','³'];
+  const COLS = ['rgba(0,229,195,', 'rgba(0,255,136,', 'rgba(0,153,255,', 'rgba(0,200,180,'];
+
+  class MathSymbol {
+    constructor(scatter) { this.reset(scatter); }
+    reset(scatter) {
+      this.x   = Math.random() * W;
+      this.y   = scatter ? Math.random() * H : H + 30;
+      this.sym = SYMBOLS[Math.random() * SYMBOLS.length | 0];
+      this.sz  = Math.random() * 18 + 10;
+      this.vy  = -(Math.random() * .55 + .2);
+      this.vx  = (Math.random() - .5) * .25;
+      this.rot = Math.random() * Math.PI * 2;
+      this.vr  = (Math.random() - .5) * .012;
+      this.col = COLS[Math.random() * COLS.length | 0];
+      this.life = 0;
+      this.max  = Math.random() * 260 + 140;
+    }
+    tick() {
+      this.x += this.vx; this.y += this.vy;
+      this.rot += this.vr; this.life++;
+      const t = this.life / this.max;
+      this.a = (t < .15 ? t / .15 : t > .80 ? (1 - t) / .20 : 1) * .5;
+      if (this.life >= this.max) this.reset(false);
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.a;
+      ctx.font = `${this.sz}px monospace`;
+      ctx.fillStyle = this.col + this.a + ')';
+      ctx.shadowColor = this.col + '0.6)';
+      ctx.shadowBlur = 8;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.fillText(this.sym, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  const dots = Array.from({length: 50}, () => new MathSymbol(true));
+
+  (function loop() {
+    ctx.clearRect(0, 0, W, H);
+    dots.forEach(d => { d.tick(); d.draw(); });
+    requestAnimationFrame(loop);
+  })();
+</script>
+</body>
 </html>
