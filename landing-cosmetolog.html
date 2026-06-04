@@ -8,15 +8,15 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #020d0d;
-    --teal: #00e5c3;
-    --green: #00ff88;
-    --blue: #0099ff;
-    --text: #e0fff8;
-    --muted: #7aaaa0;
-    --card: #0b1a17;
-    --card2: #0a1520;
-    --border: rgba(0, 229, 195, 0.12);
+    --bg: #fdf8ff;
+    --teal: #a855f7;
+    --green: #f472b6;
+    --blue: #c084fc;
+    --text: #1e0a3c;
+    --muted: #8b6aac;
+    --card: #ffffff;
+    --card2: #faf0ff;
+    --border: rgba(168, 85, 247, 0.12);
   }
 
   html { scroll-behavior: smooth; }
@@ -24,7 +24,7 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     overflow-x: hidden;
     line-height: 1.6;
   }
@@ -34,7 +34,7 @@
     position: fixed;
     inset: 0;
     z-index: 0;
-    opacity: 0.25;
+    opacity: 0.12;
     pointer-events: none;
   }
 
@@ -61,27 +61,28 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--teal);
-    border: 1px solid rgba(0,229,195,0.3);
+    border: 1px solid rgba(168,85,247,0.25);
     border-radius: 20px;
     padding: 6px 16px;
     margin-bottom: 28px;
-    background: rgba(0,229,195,0.06);
+    background: rgba(168,85,247,0.07);
     animation: fadeUp 0.6s ease both;
   }
 
   .hero-title {
     font-size: clamp(28px, 6vw, 58px);
     font-weight: 900;
-    letter-spacing: -1px;
-    line-height: 1.1;
+    letter-spacing: -1.5px;
+    line-height: 1.08;
     margin-bottom: 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     background: linear-gradient(120deg, var(--teal) 0%, var(--green) 40%, var(--blue) 75%, var(--teal) 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: gradientShift 5s linear infinite, fadeUp 0.7s ease both 0.1s;
-    filter: drop-shadow(0 0 32px rgba(0,229,195,0.3));
+    filter: drop-shadow(0 0 32px rgba(168,85,247,0.2));
   }
 
   .hero-sub {
@@ -114,12 +115,12 @@
     font-size: 17px;
     font-weight: 800;
     text-decoration: none;
-    color: #020d0d;
+    color: #ffffff;
     background: linear-gradient(120deg, var(--teal), var(--green) 50%, var(--blue));
     background-size: 200% auto;
     border: none;
     cursor: pointer;
-    box-shadow: 0 0 0 0 rgba(0,229,195,0.5);
+    box-shadow: 0 0 0 0 rgba(168,85,247,0.4);
     animation: ctaPulse 2.4s ease-in-out infinite;
     transition: background-position 0.4s, transform 0.2s;
     position: relative;
@@ -135,9 +136,9 @@
   }
 
   @keyframes ctaPulse {
-    0%   { box-shadow: 0 0 0 0 rgba(0,229,195,0.5); }
-    60%  { box-shadow: 0 0 0 18px rgba(0,229,195,0); }
-    100% { box-shadow: 0 0 0 0 rgba(0,229,195,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(168,85,247,0.4); }
+    60%  { box-shadow: 0 0 0 18px rgba(168,85,247,0); }
+    100% { box-shadow: 0 0 0 0 rgba(168,85,247,0); }
   }
 
   .tg-link {
@@ -161,7 +162,7 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: rgba(122,170,160,0.4);
+    color: rgba(139,106,172,0.4);
     font-size: 12px;
     letter-spacing: 1px;
     animation: fadeUp 0.7s ease both 0.5s;
@@ -201,7 +202,8 @@
     font-size: clamp(22px, 4vw, 36px);
     font-weight: 800;
     margin-bottom: 48px;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   }
 
   .cards {
@@ -218,6 +220,7 @@
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 16px rgba(168,85,247,0.06);
   }
 
   .card::before {
@@ -232,8 +235,8 @@
 
   .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 48px rgba(0,229,195,0.1);
-    border-color: rgba(0,229,195,0.25);
+    box-shadow: 0 16px 48px rgba(168,85,247,0.12);
+    border-color: rgba(168,85,247,0.28);
   }
 
   .card:hover::before { opacity: 1; }
@@ -248,9 +251,9 @@
     margin-bottom: 20px;
   }
 
-  .icon-teal  { background: rgba(0,229,195,0.1); color: var(--teal); }
-  .icon-green { background: rgba(0,255,136,0.1); color: var(--green); }
-  .icon-blue  { background: rgba(0,153,255,0.1); color: var(--blue); }
+  .icon-teal  { background: rgba(168,85,247,0.1);  color: var(--teal); }
+  .icon-green { background: rgba(244,114,182,0.1); color: var(--green); }
+  .icon-blue  { background: rgba(192,132,252,0.1); color: var(--blue); }
 
   .card-icon svg { width: 26px; height: 26px; }
 
@@ -268,7 +271,7 @@
 
   /* ── FOR WHOM ── */
   .for-whom {
-    background: linear-gradient(135deg, #071510 0%, #070f18 100%);
+    background: linear-gradient(135deg, #f5eeff 0%, #fff0f9 100%);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     padding: 80px 24px;
@@ -295,7 +298,7 @@
     gap: 8px;
   }
 
-  .dot-teal  { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+  .dot-teal  { width: 8px; height: 8px; border-radius: 50%; background: var(--teal);  flex-shrink: 0; }
   .dot-green { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
   .check-list {
@@ -353,6 +356,7 @@
     background-clip: text;
     line-height: 1;
     margin-bottom: 8px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   }
 
   .stat-label {
@@ -363,7 +367,7 @@
 
   /* ── HOW IT WORKS ── */
   .steps {
-    background: linear-gradient(135deg, #071510 0%, #070f18 100%);
+    background: linear-gradient(135deg, #f5eeff 0%, #fff0f9 100%);
     border-top: 1px solid var(--border);
     padding: 80px 24px;
   }
@@ -388,7 +392,7 @@
     top: 24px;
     bottom: 24px;
     width: 2px;
-    background: linear-gradient(180deg, var(--teal), var(--blue));
+    background: linear-gradient(180deg, var(--teal), var(--green));
     opacity: 0.2;
   }
 
@@ -403,8 +407,8 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(0,229,195,0.15), rgba(0,153,255,0.15));
-    border: 1px solid rgba(0,229,195,0.25);
+    background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(244,114,182,0.1));
+    border: 1px solid rgba(168,85,247,0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -456,7 +460,7 @@
     padding: 28px 24px;
     text-align: center;
     font-size: 13px;
-    color: rgba(122,170,160,0.4);
+    color: rgba(139,106,172,0.4);
   }
 
   /* ── ANIMATIONS ── */
@@ -588,19 +592,19 @@
           <h3><span class="dot-teal"></span>Подходит если вы</h3>
           <ul class="check-list">
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Частный косметолог или мастер с кабинетом
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Работаете больше года и есть база клиентов от 30 человек
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Хотите больше повторных записей без ручной переписки
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Устали платить за рекламу с непредсказуемым результатом
             </li>
           </ul>
@@ -610,19 +614,19 @@
           <h3><span class="dot-green"></span>Почему это выгодно</h3>
           <ul class="check-list">
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Вернуть старого клиента в 5 раз дешевле, чем привлечь нового
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Система окупается уже с 2–3 возвращённых клиентов
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Настраивается один раз — работает месяцами без вашего участия
             </li>
             <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Первые результаты видны уже через 2–3 недели после запуска
             </li>
           </ul>
@@ -743,7 +747,7 @@
       speedX: (Math.random() - 0.5) * 0.25,
       speedY: -0.15 - Math.random() * 0.25,
       opacity: 0.04 + Math.random() * 0.1,
-      color: ['#00e5c3','#00ff88','#0099ff'][Math.floor(Math.random() * 3)]
+      color: ['#a855f7','#f472b6','#c084fc'][Math.floor(Math.random() * 3)]
     });
   }
 
