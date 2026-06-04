@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Система повторных записей для косметологов</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #020d0d;
+    --teal: #00e5c3;
+    --green: #00ff88;
+    --blue: #0099ff;
+    --text: #e0fff8;
+    --muted: #7aaaa0;
+    --card: #0b1a17;
+    --card2: #0a1520;
+    --border: rgba(0, 229, 195, 0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* Canvas */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid rgba(0,229,195,0.3);
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin-bottom: 28px;
+    background: rgba(0,229,195,0.06);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 6vw, 58px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    background: linear-gradient(120deg, var(--teal) 0%, var(--green) 40%, var(--blue) 75%, var(--teal) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 5s linear infinite, fadeUp 0.7s ease both 0.1s;
+    filter: drop-shadow(0 0 32px rgba(0,229,195,0.3));
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 2.5vw, 19px);
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 48px;
+    animation: fadeUp 0.7s ease both 0.2s;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+  }
+
+  /* CTA */
+  .cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    animation: fadeUp 0.7s ease both 0.3s;
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 17px 44px;
+    border-radius: 50px;
+    font-size: 17px;
+    font-weight: 800;
+    text-decoration: none;
+    color: #020d0d;
+    background: linear-gradient(120deg, var(--teal), var(--green) 50%, var(--blue));
+    background-size: 200% auto;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(0,229,195,0.5);
+    animation: ctaPulse 2.4s ease-in-out infinite;
+    transition: background-position 0.4s, transform 0.2s;
+    position: relative;
+  }
+
+  .btn-cta:hover {
+    background-position: right center;
+    transform: translateY(-3px) scale(1.04);
+  }
+
+  .btn-cta:active {
+    transform: scale(0.98);
+  }
+
+  @keyframes ctaPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(0,229,195,0.5); }
+    60%  { box-shadow: 0 0 0 18px rgba(0,229,195,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,229,195,0); }
+  }
+
+  .tg-link {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tg-link:hover { color: var(--teal); }
+
+  .tg-link svg { width: 16px; height: 16px; }
+
+  /* Scroll hint */
+  .scroll-hint {
+    margin-top: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(122,170,160,0.4);
+    font-size: 12px;
+    letter-spacing: 1px;
+    animation: fadeUp 0.7s ease both 0.5s;
+  }
+
+  .scroll-arrow {
+    width: 20px;
+    height: 20px;
+    animation: bounce 1.8s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(6px); }
+  }
+
+  /* ── BENEFITS ── */
+  .section {
+    padding: 80px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 800;
+    margin-bottom: 48px;
+    letter-spacing: -0.5px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--green), var(--blue));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0,229,195,0.1);
+    border-color: rgba(0,229,195,0.25);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .icon-teal  { background: rgba(0,229,195,0.1); color: var(--teal); }
+  .icon-green { background: rgba(0,255,136,0.1); color: var(--green); }
+  .icon-blue  { background: rgba(0,153,255,0.1); color: var(--blue); }
+
+  .card-icon svg { width: 26px; height: 26px; }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .card-text {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── FOR WHOM ── */
+  .for-whom {
+    background: linear-gradient(135deg, #071510 0%, #070f18 100%);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 80px 24px;
+  }
+
+  .for-whom-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 40px;
+  }
+
+  .col-block h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot-teal  { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+  .dot-green { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .check-list li {
+    font-size: 14px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .check-list li svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── STATS ── */
+  .stats {
+    padding: 80px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .stat-card {
+    text-align: center;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 20px;
+  }
+
+  .stat-num {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(120deg, var(--teal), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    background: linear-gradient(135deg, #071510 0%, #070f18 100%);
+    border-top: 1px solid var(--border);
+    padding: 80px 24px;
+  }
+
+  .steps-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 40px;
+    position: relative;
+  }
+
+  .step-list::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--teal), var(--blue));
+    opacity: 0.2;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 0;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0,229,195,0.15), rgba(0,153,255,0.15));
+    border: 1px solid rgba(0,229,195,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--teal);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    padding-top: 12px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── BOTTOM CTA ── */
+  .bottom-cta {
+    padding: 100px 24px;
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .bottom-cta h2 {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .bottom-cta p {
+    color: var(--muted);
+    margin-bottom: 40px;
+    font-size: 16px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(122,170,160,0.4);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes gradientShift {
+    from { background-position: 0% center; }
+    to   { background-position: 200% center; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .two-cols { grid-template-columns: 1fr; gap: 28px; }
+    .step-list::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="badge">AI-автоматизация для косметологов</span>
+
+    <h1 class="hero-title">Система повторных записей<br>для косметологов</h1>
+
+    <p class="hero-sub">
+      Настраиваю <strong>AI-систему возврата клиентов</strong>, чтобы увеличить
+      количество повторных записей без лишней рутины
+    </p>
+
+    <div class="cta-wrap">
+      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="btn-cta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+        </svg>
+        Получить бесплатный разбор
+      </a>
+
+      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="tg-link">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+        </svg>
+        @Olga1222 в Telegram
+      </a>
+    </div>
+
+    <div class="scroll-hint">
+      <span>ПОДРОБНЕЕ</span>
+      <svg class="scroll-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10 4v12M4 11l6 6 6-6"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="section">
+    <p class="section-label reveal">Преимущества</p>
+    <h2 class="section-title reveal">Что вы получаете</h2>
+
+    <div class="cards">
+
+      <div class="card reveal">
+        <div class="card-icon icon-teal">
+          <!-- Clients return icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Возвращает клиентов из вашей базы</h3>
+        <p class="card-text">Система сама напоминает клиентам о повторном визите в нужный момент. Вы не теряете тех, кто уже был и остался доволен.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-icon icon-green">
+          <!-- 24/7 icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Работает автоматически 24/7</h3>
+        <p class="card-text">Настраивается один раз и работает без вашего участия. Сообщения уходят ночью, в выходные, в отпуске — система не спит.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-icon icon-blue">
+          <!-- Revenue icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Увеличивает выручку без затрат на рекламу</h3>
+        <p class="card-text">Работа идёт с клиентами которые уже вам доверяют. Не нужен рекламный бюджет — только ваша база и правильная автоматизация.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOR WHOM -->
+  <section class="for-whom">
+    <div class="for-whom-inner">
+      <p class="section-label reveal" style="text-align:center">Аудитория</p>
+      <h2 class="section-title reveal">Кому это подойдёт и почему выгодно</h2>
+
+      <div class="two-cols">
+        <div class="col-block reveal">
+          <h3><span class="dot-teal"></span>Подходит если вы</h3>
+          <ul class="check-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Частный косметолог или мастер с кабинетом
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Работаете больше года и есть база клиентов от 30 человек
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Хотите больше повторных записей без ручной переписки
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00e5c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Устали платить за рекламу с непредсказуемым результатом
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-block reveal">
+          <h3><span class="dot-green"></span>Почему это выгодно</h3>
+          <ul class="check-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Вернуть старого клиента в 5 раз дешевле, чем привлечь нового
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Система окупается уже с 2–3 возвращённых клиентов
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Настраивается один раз — работает месяцами без вашего участия
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Первые результаты видны уже через 2–3 недели после запуска
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <p class="section-label reveal" style="text-align:center">В цифрах</p>
+    <h2 class="section-title reveal">Что даёт система</h2>
+
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <div class="stat-num">30%</div>
+        <div class="stat-label">клиентов не возвращаются просто потому что никто не напомнил</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">5x</div>
+        <div class="stat-label">дешевле вернуть старого клиента, чем найти нового</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">система работает без выходных и вашего участия</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">7 дн</div>
+        <div class="stat-label">и система запущена и начинает возвращать клиентов</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps">
+    <div class="steps-inner">
+      <p class="section-label reveal" style="text-align:center">Процесс</p>
+      <h2 class="section-title reveal">Как это работает</h2>
+
+      <div class="step-list">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Разбор вашей базы клиентов</h4>
+            <p>Смотрим кто давно не приходил, считаем потенциал возврата и определяем с каких клиентов начать.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Настройка AI-системы под ваш кабинет</h4>
+            <p>Настраиваю автоматические сообщения, сценарии возврата и напоминания. Всё адаптировано под ваши процедуры и стиль общения.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Запуск и первые результаты</h4>
+            <p>Система запускается и начинает работать. Вы принимаете клиентов, система пишет им сама. Первые повторные записи — в течение 2–3 недель.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Работает без вашего участия</h4>
+            <p>После настройки система работает самостоятельно. Вы только видите новые записи в своём расписании.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <section class="bottom-cta">
+    <h2 class="reveal">Готовы запустить<br>систему возврата клиентов?</h2>
+    <p class="reveal">Напишите в Telegram — разберём вашу ситуацию бесплатно и покажем сколько клиентов можно вернуть из вашей базы.</p>
+
+    <div class="cta-wrap reveal">
+      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="btn-cta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+        </svg>
+        Написать в Telegram
+      </a>
+      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="tg-link">
+        @Olga1222
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    Ольга Жебрик — AI-система возврата клиентов для косметологов
+  </footer>
+
+</div>
+
+<script>
+  // Background canvas
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const symbols = ['AI', '◈', '∿', '⬡', '✦', '◇', '≋', '⊕', '⬢', '✧'];
+  const particles = [];
+
+  for (let i = 0; i < 32; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      sym: symbols[Math.floor(Math.random() * symbols.length)],
+      size: 8 + Math.random() * 9,
+      speedX: (Math.random() - 0.5) * 0.25,
+      speedY: -0.15 - Math.random() * 0.25,
+      opacity: 0.04 + Math.random() * 0.1,
+      color: ['#00e5c3','#00ff88','#0099ff'][Math.floor(Math.random() * 3)]
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.font = `${p.size}px monospace`;
+      ctx.fillText(p.sym, p.x, p.y);
+      ctx.restore();
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+      if (p.x < -20) p.x = canvas.width + 20;
+      if (p.x > canvas.width + 20) p.x = -20;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
