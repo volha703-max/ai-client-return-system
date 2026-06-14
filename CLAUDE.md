@@ -1,4 +1,4 @@
-# CLAUDE.md — Репозиторий my-first-project
+# CLAUDE.md — Репозиторий ai-client-return-system
 
 ## Владелец
 Ольга — специалист по созданию системы возврата клиентов для косметологов под ключ. Telegram: @olga1222. GitHub: volha703-max (email: volha703@gmail.com).
@@ -12,27 +12,27 @@
 - **Язык:** Никаких слов «AI», «CRM», «воронка», «лид» — только понятные термины и результаты
 
 ## GitHub
-- Репозиторий: https://github.com/volha703-max/my-first-project
+- Репозиторий: https://github.com/volha703-max/ai-client-return-system
 - Ветка: main
 - GitHub Pages включён, источник: branch main, папка /
 - PAT токен сохранён в C:\Users\Lenovo\.git-credentials
 
 ## Живые ссылки
 ### Портфолио
-- Главная: https://volha703-max.github.io/my-first-project/index.html
-- Визитка личная: https://volha703-max.github.io/my-first-project/vizitka_kalkulyator.html
-- Калькуляторы: https://volha703-max.github.io/my-first-project/landing_kalkulyator.html
+- Главная: https://volha703-max.github.io/ai-client-return-system/index.html
+- Визитка личная: https://volha703-max.github.io/ai-client-return-system/vizitka_kalkulyator.html
+- Калькуляторы: https://volha703-max.github.io/ai-client-return-system/landing_kalkulyator.html
 
 ### Проект «Косметолог»
-- Лендинг: https://volha703-max.github.io/my-first-project/landing-cosmetolog.html
-- Визитка: https://volha703-max.github.io/my-first-project/vizitka-cosmetolog.html
+- Лендинг: https://volha703-max.github.io/ai-client-return-system/landing-cosmetolog.html
+- Визитка: https://volha703-max.github.io/ai-client-return-system/vizitka-cosmetolog.html
 
 ## Технические правила
 - Каждая страница — один самодостаточный HTML-файл (CSS и JS внутри)
 - Никаких внешних библиотек и CDN — только чистый HTML/CSS/JS
 - `vizitka-cosmetolog.html` большой (base64 фото) — читать только нужные части с offset/limit
 - **После любых изменений: git add + commit + push**
-- Рабочая папка: `c:\Users\Lenovo\OneDrive\Документы\Projects\my-first-project`
+- Рабочая папка: `c:\Users\Lenovo\OneDrive\Документы\Projects\ai-client-return-system`
 
 ## Документация по проектам
 - [plan-portfolio.md](plan-portfolio.md) — план портфолио-сайта
