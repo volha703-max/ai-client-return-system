@@ -1,717 +1,807 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Система повторных записей для косметологов</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ольга — система возврата клиентов для косметологов</title>
+  <style>
+    :root {
+      --bg:     #F7F4EF;
+      --text:   #3A3A3A;
+      --accent: #B88A7A;
+      --soft:   #E7D6CF;
+      --muted:  #9A8880;
+      --card:   #FFFFFF;
+      --border: #EDE6DF;
+      --bg-alt: #F2EDE6;
+    }
 
-  :root {
-    --bg:     #F7F4EF;
-    --text:   #3A3A3A;
-    --accent: #B88A7A;
-    --soft:   #E7D6CF;
-    --muted:  #9A8880;
-    --card:   #FFFFFF;
-    --border: #EDE6DF;
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-weight: 700; line-height: 1.2; }
+    a { color: inherit; text-decoration: none; }
 
-  html { scroll-behavior: smooth; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    overflow-x: hidden;
-    line-height: 1.6;
-  }
+    .label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
 
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 100px 24px 80px;
-  }
+    .divider {
+      width: 36px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.45;
+      margin: 0 auto 56px;
+    }
 
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid var(--soft);
-    border-radius: 2px;
-    padding: 6px 16px;
-    margin-bottom: 32px;
-    background: rgba(184,138,122,0.06);
-    animation: fadeUp 0.5s ease both;
-  }
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 16px 40px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      letter-spacing: 0.3px;
+      font-family: inherit;
+    }
+    .btn:hover { background: #a57a6b; transform: translateY(-2px); }
 
-  .badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
+    .btn-ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-ghost:hover { background: var(--accent); color: #fff; }
 
-  .hero-title {
-    font-size: clamp(32px, 6vw, 60px);
-    font-weight: 700;
-    letter-spacing: -1.5px;
-    line-height: 1.05;
-    margin-bottom: 12px;
-    color: var(--text);
-    animation: fadeUp 0.6s ease both 0.1s;
-  }
+    section { padding: 96px 0; }
+    .alt { background: var(--bg-alt); }
 
-  .hero-title .accent {
-    color: var(--accent);
-  }
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      letter-spacing: -0.8px;
+      margin-bottom: 16px;
+    }
 
-  .hero-eyebrow {
-    font-size: clamp(14px, 2vw, 16px);
-    font-weight: 400;
-    color: var(--muted);
-    margin-bottom: 40px;
-    max-width: 520px;
-    line-height: 1.65;
-    animation: fadeUp 0.6s ease both 0.2s;
-  }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
 
-  .hero-eyebrow strong { color: var(--text); font-weight: 600; }
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(247,244,239,0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 8px 20px;
+      border-radius: 2px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; }
+    .nav-burger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-burger span { display: block; width: 22px; height: 2px; background: var(--text); margin: 5px 0; border-radius: 2px; transition: all 0.3s; }
+    .mobile-menu { display: none; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); padding: 16px 24px 24px; gap: 0; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 15px; color: var(--text); padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .mobile-menu .btn { margin-top: 16px; text-align: center; }
 
-  .hero-divider {
-    width: 40px; height: 2px;
-    background: var(--accent);
-    margin: 0 auto 40px;
-    animation: fadeUp 0.6s ease both 0.15s;
-  }
+    /* HERO */
+    #hero {
+      padding-top: 140px;
+      padding-bottom: 96px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-title {
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      line-height: 1.15;
+    }
+    .hero-title em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 17px; color: var(--muted); line-height: 1.75; margin-bottom: 40px; max-width: 440px; }
+    .hero-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero-trust { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+    .hero-trust::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent); opacity: 0.6; flex-shrink: 0; }
 
-  /* CTA */
-  .cta-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    animation: fadeUp 0.6s ease both 0.3s;
-  }
+    .hero-visual { display: flex; justify-content: center; }
+    .photo-frame { position: relative; width: 380px; height: 460px; }
+    .photo-bg { position: absolute; inset: 0; background: var(--soft); border-radius: 4px; }
+    .photo-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+    .photo-circle {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: var(--accent); opacity: 0.75;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 700; color: #fff;
+    }
+    .photo-label { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
+    .photo-badge {
+      position: absolute; bottom: -20px; left: -20px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 32px rgba(184,138,122,0.14);
+    }
+    .photo-badge strong { display: block; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .photo-badge span { font-size: 12px; color: var(--muted); }
 
-  .btn-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 40px;
-    border-radius: 2px;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-    color: #fff;
-    background: var(--accent);
-    border: none;
-    cursor: pointer;
-    letter-spacing: 0.3px;
-    transition: background 0.2s, transform 0.2s;
-  }
+    /* PROBLEM */
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .problem-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 28px;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .problem-card:hover { box-shadow: 0 8px 32px rgba(184,138,122,0.1); transform: translateY(-2px); }
+    .problem-num { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--accent); opacity: 0.6; margin-bottom: 14px; }
+    .problem-card p { font-size: 15px; line-height: 1.65; }
+    .problem-outro { text-align: center; font-size: 17px; color: var(--muted); font-style: italic; margin-top: 48px; }
 
-  .btn-cta:hover {
-    background: #a57a6b;
-    transform: translateY(-2px);
-  }
+    /* SOLUTION */
+    .solution-lead {
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700; letter-spacing: -0.8px; line-height: 1.3;
+      text-align: center; max-width: 680px; margin: 0 auto 56px;
+    }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .tool-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 32px 28px;
+      box-shadow: 0 2px 40px rgba(184,138,122,0.05);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .tool-card:hover { box-shadow: 0 12px 48px rgba(184,138,122,0.12); transform: translateY(-3px); }
+    .tool-num { font-size: 11px; font-weight: 600; letter-spacing: 3px; color: var(--accent); margin-bottom: 16px; }
+    .tool-card h3 { font-size: 17px; margin-bottom: 10px; }
+    .tool-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
-  .btn-cta:active { transform: scale(0.98); }
+    /* PROCESS */
+    .steps-wrap { max-width: 680px; margin: 0 auto; }
+    .step { display: grid; grid-template-columns: 56px 1fr; gap: 28px; align-items: flex-start; position: relative; }
+    .step:not(:last-child) { padding-bottom: 40px; }
+    .step:not(:last-child)::after {
+      content: ''; position: absolute; left: 27px; top: 56px; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+    .step-body { padding-top: 10px; }
+    .step-body h3 { font-size: 18px; margin-bottom: 8px; }
+    .step-body p { font-size: 15px; color: var(--muted); line-height: 1.65; }
 
-  .tg-link {
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    letter-spacing: 0.2px;
-  }
-  .tg-link:hover { color: var(--accent); }
-  .tg-link svg { width: 15px; height: 15px; }
+    /* CASES */
+    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .case-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px;
+      padding: 36px 32px; position: relative;
+    }
+    .case-tag {
+      position: absolute; top: 28px; right: 28px;
+      background: var(--soft); color: var(--accent);
+      font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 2px;
+    }
+    .case-quote { font-size: 48px; color: var(--soft); line-height: 1; font-family: Georgia, serif; margin-bottom: -4px; }
+    .case-text { font-size: 15px; line-height: 1.75; margin-bottom: 24px; padding-right: 80px; }
+    .case-author { display: flex; align-items: center; gap: 12px; }
+    .case-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+    }
+    .case-name { font-size: 14px; font-weight: 600; }
+    .case-city { font-size: 12px; color: var(--muted); }
 
-  .scroll-hint {
-    margin-top: 64px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    color: var(--soft);
-    font-size: 10px;
-    letter-spacing: 2.5px;
-    animation: fadeUp 0.6s ease both 0.5s;
-  }
+    /* PACKAGES */
+    .packages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+    .pkg {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 36px 28px;
+      display: flex; flex-direction: column;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .pkg:hover { box-shadow: 0 12px 48px rgba(184,138,122,0.12); transform: translateY(-4px); }
+    .pkg.featured { border-color: var(--accent); position: relative; }
+    .pkg-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 4px 16px; border-radius: 2px; white-space: nowrap;
+    }
+    .pkg-label { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .pkg-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .pkg-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .pkg-list { list-style: none; margin-bottom: 28px; flex: 1; }
+    .pkg-list li {
+      font-size: 14px; padding: 9px 0; border-bottom: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .pkg-list li::before {
+      content: ''; display: inline-block; width: 4px; height: 4px;
+      border-radius: 50%; background: var(--accent); margin-top: 9px; flex-shrink: 0;
+    }
+    .pkg-price { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+    .pkg-price small { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .pkg-roi { text-align: center; margin-top: 32px; font-size: 14px; color: var(--muted); }
+    .pkg-roi strong { color: var(--text); }
 
-  .scroll-arrow {
-    width: 18px; height: 18px;
-    animation: bounce 2s ease-in-out infinite;
-  }
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .about-photo {
+      width: 100%; max-width: 360px; aspect-ratio: 3/4; background: var(--soft); border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    }
+    .about-text h2 { font-size: clamp(1.6rem, 2.5vw, 2.2rem); letter-spacing: -0.8px; margin-bottom: 24px; }
+    .about-text p { font-size: 16px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+    .about-text p strong { color: var(--text); }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(6px); }
-  }
+    /* REVIEWS */
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .review-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 28px; }
+    .review-text { font-size: 15px; line-height: 1.75; font-style: italic; margin-bottom: 20px; }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+    }
+    .review-name { font-size: 14px; font-weight: 600; }
+    .review-city { font-size: 12px; color: var(--muted); }
 
-  /* ── BENEFITS ── */
-  .section {
-    padding: 96px 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
+    /* FAQ */
+    .faq-wrap { max-width: 720px; margin: 0 auto; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      width: 100%; background: none; border: none; text-align: left;
+      padding: 22px 0; font-size: 16px; font-weight: 600; color: var(--text);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      transition: color 0.2s; font-family: inherit;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-icon {
+      width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 14px; color: var(--accent);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .faq-item.open .faq-icon { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .faq-a {
+      font-size: 15px; color: var(--muted); line-height: 1.75;
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 22px; }
 
-  .section-label {
-    text-align: center;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
+    /* FINAL CTA */
+    #cta { background: var(--text); color: #fff; text-align: center; padding: 120px 0; }
+    #cta .label { color: rgba(255,255,255,0.35); }
+    #cta h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); letter-spacing: -1px; margin-bottom: 16px; color: #fff; }
+    #cta p { font-size: 17px; color: rgba(255,255,255,0.5); margin-bottom: 40px; }
+    #cta .btn { background: var(--accent); }
+    #cta .btn:hover { background: #a57a6b; }
+    .cta-note { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3); }
 
-  .section-title {
-    text-align: center;
-    font-size: clamp(22px, 4vw, 36px);
-    font-weight: 700;
-    margin-bottom: 56px;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
+    /* FOOTER */
+    footer { padding: 36px 0; background: var(--bg); border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-size: 13px; color: var(--muted); }
+    .footer-tg { font-size: 13px; color: var(--accent); }
+    .footer-tg:hover { text-decoration: underline; }
 
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 36px 28px;
-    transition: transform 0.25s, box-shadow 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::after {
-    content: '';
-    position: absolute;
-    left: 0; top: 20%; bottom: 20%;
-    width: 3px;
-    background: var(--accent);
-    opacity: 0.5;
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(184,138,122,0.12);
-  }
-
-  .card-icon {
-    width: 48px; height: 48px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    background: rgba(184,138,122,0.08);
-    color: var(--accent);
-  }
-
-  .icon-teal  { background: rgba(184,138,122,0.08); color: var(--accent); }
-  .icon-green { background: rgba(184,138,122,0.06); color: var(--accent); }
-  .icon-blue  { background: rgba(184,138,122,0.10); color: var(--accent); }
-
-  .card-icon svg { width: 24px; height: 24px; }
-
-  .card-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .card-text {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  /* ── FOR WHOM ── */
-  .for-whom {
-    background: #F2EDE6;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 96px 24px;
-  }
-
-  .for-whom-inner { max-width: 900px; margin: 0 auto; }
-
-  .two-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 48px;
-  }
-
-  .col-box {
-    background: var(--card);
-    border-radius: 4px;
-    padding: 32px 28px;
-    border: 1px solid var(--border);
-  }
-
-  .col-box h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .tag-purple {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(184,138,122,0.1);
-    border-radius: 2px;
-    padding: 3px 9px;
-  }
-
-  .tag-pink {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: rgba(154,136,128,0.1);
-    border-radius: 2px;
-    padding: 3px 9px;
-  }
-
-  .check-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .check-list li {
-    font-size: 14px;
-    color: var(--muted);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    line-height: 1.55;
-  }
-
-  .check-list li svg {
-    width: 16px; height: 16px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  /* ── STATS ── */
-  .stats {
-    padding: 96px 24px;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 16px;
-    margin-top: 48px;
-  }
-
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 36px 24px;
-    text-align: center;
-  }
-
-  .stat-num {
-    font-size: clamp(36px, 5vw, 48px);
-    font-weight: 700;
-    letter-spacing: -1px;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 10px;
-  }
-
-  .stat-label {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-    font-weight: 400;
-  }
-
-  /* ── STEPS ── */
-  .steps {
-    background: #F2EDE6;
-    border-top: 1px solid var(--border);
-    padding: 96px 24px;
-  }
-
-  .steps-inner { max-width: 720px; margin: 0 auto; }
-
-  .step-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 48px;
-    position: relative;
-  }
-
-  .step-list::before {
-    content: '';
-    position: absolute;
-    left: 23px; top: 28px; bottom: 28px;
-    width: 1px;
-    background: var(--soft);
-  }
-
-  .step {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    padding: 16px 0;
-  }
-
-  .step-num {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .step-body h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    padding-top: 12px;
-    color: var(--text);
-  }
-
-  .step-body p {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
-  }
-
-  /* ── BOTTOM CTA ── */
-  .bottom-cta {
-    padding: 100px 24px 80px;
-    text-align: center;
-    max-width: 560px;
-    margin: 0 auto;
-  }
-
-  .bottom-cta h2 {
-    font-size: clamp(24px, 4vw, 40px);
-    font-weight: 700;
-    margin-bottom: 16px;
-    letter-spacing: -0.5px;
-    line-height: 1.15;
-  }
-
-  .bottom-cta p {
-    color: var(--muted);
-    margin-bottom: 44px;
-    font-size: 15px;
-    line-height: 1.7;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 28px 24px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 0.3px;
-  }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.65s ease, transform 0.65s ease;
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .two-cols { grid-template-columns: 1fr; }
-    .step-list::before { display: none; }
-    .hero-title { letter-spacing: -1px; }
-  }
-</style>
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .packages-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 64px 0; }
+      #hero { padding-top: 96px; padding-bottom: 64px; min-height: auto; }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { order: -1; }
+      .photo-frame { width: 260px; height: 320px; margin: 0 auto; }
+      .photo-badge { bottom: -12px; left: -10px; padding: 12px 16px; }
+      .photo-badge strong { font-size: 20px; }
+      .hero-actions { align-items: stretch; }
+      .btn { text-align: center; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-photo { max-width: 100%; aspect-ratio: 4/3; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-burger { display: block; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      section { padding: 48px 0; }
+      .case-text { padding-right: 0; }
+      .case-tag { position: static; display: inline-block; margin-bottom: 12px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="wrap">
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">Ольга &middot; Возврат клиентов для косметологов</span>
+    <ul class="nav-links">
+      <li><a href="#solution">Что делаю</a></li>
+      <li><a href="#process">Как работаю</a></li>
+      <li><a href="#packages">Пакеты</a></li>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#faq">Вопросы</a></li>
+    </ul>
+    <a href="https://t.me/olga1222" target="_blank" class="nav-cta">Написать в Telegram</a>
+    <button class="nav-burger" onclick="toggleMenu()" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#solution" onclick="closeMenu()">Что делаю</a>
+    <a href="#process" onclick="closeMenu()">Как работаю</a>
+    <a href="#packages" onclick="closeMenu()">Пакеты</a>
+    <a href="#about" onclick="closeMenu()">Обо мне</a>
+    <a href="#faq" onclick="closeMenu()">Вопросы</a>
+    <a href="https://t.me/olga1222" target="_blank" class="btn">Написать в Telegram</a>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <span class="badge">AI-автоматизация для косметологов</span>
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="reveal">
+        <span class="label">Специалист по возврату клиентов для косметологов</span>
+        <h1 class="hero-title">
+          Ваши клиенты уходят и <em>не возвращаются.</em><br>
+          Я настрою систему, которая вернёт их сама
+        </h1>
+        <p class="hero-sub">
+          Создаю сайты, квизы, чат-боты и автоматические напоминания для косметологов — всё под ключ, без вашего участия
+        </p>
+        <div class="hero-actions">
+          <a href="https://t.me/olga1222" target="_blank" class="btn">
+            Узнать, что подойдёт моему кабинету
+          </a>
+          <span class="hero-trust">Уже работает у 20+ косметологов</span>
+        </div>
+      </div>
+      <div class="hero-visual reveal" style="transition-delay:0.15s">
+        <div class="photo-frame">
+          <div class="photo-bg"></div>
+          <div class="photo-content">
+            <div class="photo-circle">О</div>
+            <span class="photo-label">Здесь будет<br>фото Ольги</span>
+          </div>
+          <div class="photo-badge">
+            <strong>20+</strong>
+            <span>косметологов<br>уже с системой</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <h1 class="hero-title">Система <span class="accent">повторных</span><br>записей для<br>косметологов</h1>
+<!-- PROBLEM -->
+<section id="problem" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Узнаёшь себя?</span>
+      <h2 class="section-title">Знакомые ситуации?</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card reveal">
+        <div class="problem-num">01</div>
+        <p>Клиенты пишут в мессенджерах вечером — и пропадают без записи</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.1s">
+        <div class="problem-num">02</div>
+        <p>Сделала процедуру — и клиентка больше не вернулась. Хотя всё прошло отлично</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.2s">
+        <div class="problem-num">03</div>
+        <p>Нет времени напоминать каждой клиентке вручную — работаешь руками, не системой</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.3s">
+        <div class="problem-num">04</div>
+        <p>Сайта нет или он давно устарел — новые клиенты не находят тебя</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.4s">
+        <div class="problem-num">05</div>
+        <p>Каждый месяц не знаешь, будет ли запись — живёшь на сарафане и удаче</p>
+      </div>
+    </div>
+    <p class="problem-outro reveal">Работаешь руками, а система — нет. Давай это исправим.</p>
+  </div>
+</section>
 
-    <div class="hero-divider"></div>
-
-    <p class="hero-eyebrow">
-      Настраиваю <strong>AI-систему возврата клиентов</strong>, чтобы увеличить количество повторных записей без лишней рутины
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Что я делаю</span>
+      <div class="divider"></div>
+    </div>
+    <p class="solution-lead reveal">
+      Я не делаю «просто сайт». Я строю систему, которая работает за тебя 24/7 и возвращает клиентов сама
     </p>
-
-    <div class="cta-wrap">
-      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="btn-cta">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
-        </svg>
-        Получить бесплатный разбор
-      </a>
-
-      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="tg-link">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
-        </svg>
-        @Olga1222 в Telegram
-      </a>
-    </div>
-
-    <div class="scroll-hint">
-      <span>ПОДРОБНЕЕ</span>
-      <svg class="scroll-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M10 4v12M4 11l6 6 6-6"/>
-      </svg>
-    </div>
-  </section>
-
-  <!-- BENEFITS -->
-  <section class="section">
-    <p class="section-label reveal">Преимущества</p>
-    <h2 class="section-title reveal">Что вы получаете</h2>
-
-    <div class="cards">
-
-      <div class="card reveal">
-        <div class="card-icon icon-teal">
-          <!-- Clients return icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-        </div>
-        <h3 class="card-title">Возвращает клиентов из вашей базы</h3>
-        <p class="card-text">Система сама напоминает клиентам о повторном визите в нужный момент. Вы не теряете тех, кто уже был и остался доволен.</p>
+    <div class="tools-grid">
+      <div class="tool-card reveal">
+        <div class="tool-num">01</div>
+        <h3>Сайт-визитка</h3>
+        <p>Первое впечатление, которое записывает клиентов само. Без звонков и долгих переписок.</p>
       </div>
-
-      <div class="card reveal">
-        <div class="card-icon icon-green">
-          <!-- 24/7 icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
-        <h3 class="card-title">Работает автоматически 24/7</h3>
-        <p class="card-text">Настраивается один раз и работает без вашего участия. Сообщения уходят ночью, в выходные, в отпуске — система не спит.</p>
+      <div class="tool-card reveal" style="transition-delay:0.1s">
+        <div class="tool-num">02</div>
+        <h3>Квиз для клиентов</h3>
+        <p>Отбирает тёплых клиентов и собирает заявки, пока ты на процедуре.</p>
       </div>
-
-      <div class="card reveal">
-        <div class="card-icon icon-blue">
-          <!-- Revenue icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
-        </div>
-        <h3 class="card-title">Увеличивает выручку без затрат на рекламу</h3>
-        <p class="card-text">Работа идёт с клиентами которые уже вам доверяют. Не нужен рекламный бюджет — только ваша база и правильная автоматизация.</p>
+      <div class="tool-card reveal" style="transition-delay:0.2s">
+        <div class="tool-num">03</div>
+        <h3>Чат-бот в Telegram</h3>
+        <p>Отвечает на вопросы и берёт запись в любое время суток — без твоего участия.</p>
       </div>
-
+      <div class="tool-card reveal" style="transition-delay:0.3s">
+        <div class="tool-num">04</div>
+        <h3>Автоматические напоминания</h3>
+        <p>Ни одного потерянного клиента. Никакой ручной переписки. Система делает всё сама.</p>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOR WHOM -->
-  <section class="for-whom">
-    <div class="for-whom-inner">
-      <p class="section-label reveal" style="text-align:center">Аудитория</p>
-      <h2 class="section-title reveal">Кому это подойдёт и почему выгодно</h2>
-
-      <div class="two-cols">
-        <div class="col-box reveal">
-          <h3><span class="tag-purple">Подойдёт</span></h3>
-          <ul class="check-list">
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#B88A7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Частный косметолог или мастер с кабинетом
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#B88A7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Работаете больше года и есть база от 30 клиентов
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#B88A7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Хотите больше повторных записей без ручной переписки
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#B88A7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Устали платить за рекламу с непредсказуемым результатом
-            </li>
-          </ul>
+<!-- PROCESS -->
+<section id="process" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Как это происходит</span>
+      <h2 class="section-title">Четыре шага — и система работает</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="steps-wrap">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Созвон</h3>
+          <p>Обсуждаем твою ситуацию и клиентскую базу. 30–60 минут — и я понимаю, что именно нужно твоему кабинету.</p>
         </div>
-
-        <div class="col-box reveal">
-          <h3><span class="tag-pink">Почему выгодно</span></h3>
-          <ul class="check-list">
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#9A8880" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Вернуть старого клиента в 5 раз дешевле нового
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#9A8880" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Система окупается уже с 2–3 возвращённых клиентов
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#9A8880" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Настраивается один раз — работает месяцами сама
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#9A8880" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Первые результаты через 2–3 недели после запуска
-            </li>
-          </ul>
+      </div>
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Сборка</h3>
+          <p>Настраиваю сайт, квиз и бот под твою нишу и стиль. Ты только отвечаешь на вопросы о своей работе.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Запуск</h3>
+          <p>Система начинает работать. Клиенты получают первые касания — напоминания, приглашения, информацию о записи.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Результат</h3>
+          <p>Через 2–4 недели видим первые возвращения и новые записи. Система работает, пока ты занимаешься клиентами.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- STATS -->
-  <section class="stats">
-    <p class="section-label reveal" style="text-align:center">В цифрах</p>
-    <h2 class="section-title reveal">Что даёт система</h2>
-
-    <div class="stats-grid">
-      <div class="stat-card reveal">
-        <div class="stat-num">30%</div>
-        <div class="stat-label">клиентов не возвращаются просто потому что никто не напомнил</div>
-      </div>
-      <div class="stat-card reveal">
-        <div class="stat-num">5x</div>
-        <div class="stat-label">дешевле вернуть старого клиента, чем найти нового</div>
-      </div>
-      <div class="stat-card reveal">
-        <div class="stat-num">24/7</div>
-        <div class="stat-label">система работает без выходных и вашего участия</div>
-      </div>
-      <div class="stat-card reveal">
-        <div class="stat-num">7 дн</div>
-        <div class="stat-label">и система запущена и начинает возвращать клиентов</div>
-      </div>
+<!-- CASES -->
+<section id="cases">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Результаты</span>
+      <h2 class="section-title">Что происходит с записью после запуска системы</h2>
+      <div class="divider"></div>
     </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="steps">
-    <div class="steps-inner">
-      <p class="section-label reveal" style="text-align:center">Процесс</p>
-      <h2 class="section-title reveal">Как это работает</h2>
-
-      <div class="step-list">
-        <div class="step reveal">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <h4>Разбор вашей базы клиентов</h4>
-            <p>Смотрим кто давно не приходил, считаем потенциал возврата и определяем с каких клиентов начать.</p>
+    <div class="cases-grid">
+      <div class="case-card reveal">
+        <div class="case-tag">+23 заявки</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Настроила квиз и чат-бот. За первый месяц — 23 заявки без рекламы. Раньше приходило 4–5 с сарафана.</p>
+        <div class="case-author">
+          <div class="case-avatar">А</div>
+          <div>
+            <div class="case-name">Анна</div>
+            <div class="case-city">Минск · косметолог-эстетист</div>
           </div>
         </div>
-        <div class="step reveal">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <h4>Настройка AI-системы под ваш кабинет</h4>
-            <p>Настраиваю автоматические сообщения, сценарии возврата и напоминания. Всё адаптировано под ваши процедуры и стиль общения.</p>
+      </div>
+      <div class="case-card reveal" style="transition-delay:0.12s">
+        <div class="case-tag">11 возвратов</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Бот берёт запись без меня, даже ночью. За первый месяц вернулись 11 клиентов, которых не видела больше года.</p>
+        <div class="case-author">
+          <div class="case-avatar">М</div>
+          <div>
+            <div class="case-name">Марина</div>
+            <div class="case-city">Киев · владелец кабинета</div>
           </div>
         </div>
-        <div class="step reveal">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <h4>Запуск и первые результаты</h4>
-            <p>Система запускается и начинает работать. Вы принимаете клиентов, система пишет им сама. Первые повторные записи — в течение 2–3 недель.</p>
-          </div>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <h4>Работает без вашего участия</h4>
-            <p>После настройки система работает самостоятельно. Вы только видите новые записи в своём расписании.</p>
+      </div>
+      <div class="case-card reveal" style="transition-delay:0.24s">
+        <div class="case-tag">запись на 3 нед.</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Раньше — хаос в мессенджерах. Теперь система сама напоминает и ведёт клиентов. Запись расписана на 3 недели вперёд.</p>
+        <div class="case-author">
+          <div class="case-avatar">Е</div>
+          <div>
+            <div class="case-name">Екатерина</div>
+            <div class="case-city">Москва · бьюти-студия</div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- BOTTOM CTA -->
-  <section class="bottom-cta">
-    <h2 class="reveal">Готовы запустить<br>систему возврата клиентов?</h2>
-    <p class="reveal">Напишите в Telegram — разберём вашу ситуацию бесплатно и покажем сколько клиентов можно вернуть из вашей базы.</p>
-
-    <div class="cta-wrap reveal">
-      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="btn-cta">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
-        </svg>
-        Написать в Telegram
-      </a>
-      <a href="https://t.me/Olga1222" target="_blank" rel="noopener" class="tg-link">
-        @Olga1222
-      </a>
+<!-- PACKAGES -->
+<section id="packages" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Пакеты</span>
+      <h2 class="section-title">Выбери, с чего начать</h2>
+      <div class="divider"></div>
     </div>
-  </section>
+    <div class="packages-grid">
+      <div class="pkg reveal">
+        <div class="pkg-label">Разбор</div>
+        <div class="pkg-title">Созвон и план</div>
+        <div class="pkg-desc">Для тех, кто хочет разобраться — что нужно кабинету — прежде чем вкладывать деньги</div>
+        <ul class="pkg-list">
+          <li>Созвон 60 минут</li>
+          <li>Письменный план системы</li>
+          <li>Разбор ситуации с клиентами</li>
+          <li>Рекомендации по инструментам</li>
+        </ul>
+        <div class="pkg-price">3 000 руб. <small>/ бесплатно первым 3</small></div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn btn-ghost">Записаться на разбор</a>
+      </div>
 
-  <footer>
-    Ольга Жебрик — AI-система возврата клиентов для косметологов
-  </footer>
+      <div class="pkg featured reveal" style="transition-delay:0.12s">
+        <div class="pkg-badge">Рекомендую</div>
+        <div class="pkg-label">Старт</div>
+        <div class="pkg-title">Первый шаг в онлайн</div>
+        <div class="pkg-desc">Для тех, кто выходит в онлайн или хочет заменить хаос в мессенджерах на работающий инструмент</div>
+        <ul class="pkg-list">
+          <li>Сайт-визитка под твой стиль</li>
+          <li>Квиз для подбора процедуры</li>
+          <li>Настройка под твою нишу</li>
+          <li>Мобильная версия</li>
+          <li>Правки в течение 1 месяца</li>
+        </ul>
+        <div class="pkg-price">от 15 000 руб.</div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn">Хочу «Старт»</a>
+      </div>
 
-</div>
+      <div class="pkg reveal" style="transition-delay:0.24s">
+        <div class="pkg-label">Система</div>
+        <div class="pkg-title">Полная система под ключ</div>
+        <div class="pkg-desc">Полная система возврата клиентов — сайт, бот, напоминания. Работает без твоего участия</div>
+        <ul class="pkg-list">
+          <li>Сайт-визитка</li>
+          <li>Квиз для клиентов</li>
+          <li>Чат-бот в Telegram</li>
+          <li>Автоматические напоминания</li>
+          <li>База клиентов</li>
+          <li>Правки в течение 1 месяца</li>
+        </ul>
+        <div class="pkg-price">от 35 000 руб.</div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn">Хочу полную систему</a>
+      </div>
+    </div>
+    <p class="pkg-roi reveal"><strong>3 вернувшихся клиента</strong> в месяц = окупаемость пакета «Старт»</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <div class="photo-circle" style="width:80px;height:80px;font-size:28px;">О</div>
+        <span class="photo-label">Здесь будет<br>фото Ольги</span>
+      </div>
+      <div class="about-text reveal" style="transition-delay:0.15s">
+        <span class="label">Обо мне</span>
+        <h2>Привет, я Ольга</h2>
+        <p>Помогаю косметологам <strong>перестать терять клиентов</strong> через хаос в мессенджерах и отсутствие системы.</p>
+        <p>Работаю только с косметологами — знаю эту нишу изнутри. Настраиваю системы, которые работают сами: напоминают, записывают, удерживают.</p>
+        <p>Создаю сайты, квизы, чат-боты и автоматизацию — всё под ключ. Ты продолжаешь работать руками. <strong>Система работает за тебя.</strong></p>
+        <a href="https://t.me/olga1222" target="_blank" class="btn" style="margin-top:16px">Написать Ольге в Telegram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Отзывы</span>
+      <h2 class="section-title">Что говорят косметологи</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <p class="review-text">«Я боялась, что будет сложно. Ольга всё объяснила простым языком. Теперь клиенты возвращаются сами — я даже не замечаю, как это работает.»</p>
+        <div class="review-author">
+          <div class="review-avatar">Н</div>
+          <div><div class="review-name">Наталья</div><div class="review-city">Санкт-Петербург</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.1s">
+        <p class="review-text">«Запись выросла в 2 раза за первый месяц. Больше не трачу время на переписки — бот делает всё сам.»</p>
+        <div class="review-author">
+          <div class="review-avatar">О</div>
+          <div><div class="review-name">Ольга</div><div class="review-city">Казань</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.2s">
+        <p class="review-text">«Думала, это для больших студий. Оказалось — идеально для одного мастера. Клиенты, которых не видела год — написали сами.»</p>
+        <div class="review-author">
+          <div class="review-avatar">И</div>
+          <div><div class="review-name">Ирина</div><div class="review-city">Минск</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.3s">
+        <p class="review-text">«Квиз собирает заявки, пока я на процедуре. За месяц — 17 новых обращений без рекламы. Не верила, что так бывает.»</p>
+        <div class="review-author">
+          <div class="review-avatar">Т</div>
+          <div><div class="review-name">Татьяна</div><div class="review-city">Новосибирск</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Вопросы</span>
+      <h2 class="section-title">Спрашивают чаще всего</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Я не разбираюсь в технологиях — это сложно?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Нет. Я беру на себя всё техническое. Ты только отвечаешь на вопросы о своей работе — остальное делаю я.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Сколько времени займёт настройка?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Обычно 5–7 рабочих дней с момента созвона до запуска. Зависит от выбранного пакета.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли платить за сервисы отдельно?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Да, небольшая оплата за чат-бот — обычно 300–500 руб./мес. Всё остальное входит в стоимость. Я заранее объясняю все расходы.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Как быстро увижу первые результаты?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Первые возвращения клиентов обычно через 2–4 недели после запуска. Зависит от размера клиентской базы.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Мне нужна реклама, чтобы это работало?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Нет. Система работает с твоей существующей базой — возвращает тех, кто уже был у тебя. Реклама не нужна на старте.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Что если клиенты не будут пользоваться ботом?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Настраиваю так, чтобы было просто и удобно. Если что-то не работает — дорабатываю бесплатно в течение месяца.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Можно сначала просто поговорить?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Конечно! Для этого есть бесплатный разбор — созвон 30 минут, без обязательств. Напиши в Telegram, договоримся.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="reveal">
+      <span class="label">Начнём?</span>
+      <h2>Готова, чтобы клиенты возвращались сами?</h2>
+      <p>Начнём с бесплатного разбора — 30 минут, без обязательств</p>
+      <a href="https://t.me/olga1222" target="_blank" class="btn">Написать Ольге в Telegram</a>
+      <p class="cta-note">Отвечу в течение 2 часов &nbsp;&middot;&nbsp; Без давления и продаж</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2025 Ольга &middot; Система возврата клиентов для косметологов</span>
+      <a href="https://t.me/olga1222" target="_blank" class="footer-tg">Telegram: @olga1222</a>
+    </div>
+  </div>
+</footer>
 
 <script>
-  const observer = new IntersectionObserver(entries => {
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
@@ -719,9 +809,29 @@
       }
     });
   }, { threshold: 0.1 });
-
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-</script>
 
+  // FAQ
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-icon').textContent = '+';
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.querySelector('.faq-icon').textContent = '×';
+    }
+  }
+
+  // Mobile menu
+  function toggleMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
+</script>
 </body>
 </html>
