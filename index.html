@@ -1,194 +1,837 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мои проекты</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ольга — система возврата клиентов для косметологов</title>
+  <style>
+    :root {
+      --bg:     #F7F4EF;
+      --text:   #3A3A3A;
+      --accent: #B88A7A;
+      --soft:   #E7D6CF;
+      --muted:  #9A8880;
+      --card:   #FFFFFF;
+      --border: #EDE6DF;
+      --bg-alt: #F2EDE6;
+    }
 
-  body {
-    min-height: 100vh;
-    background: #020d0d;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    color: #e0fff8;
-    overflow-x: hidden;
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-weight: 700; line-height: 1.2; }
+    a { color: inherit; text-decoration: none; }
 
-  canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-  .blob {
-    position: fixed; border-radius: 50%; filter: blur(90px);
-    opacity: .35; pointer-events: none; z-index: 0;
-  }
-  .b1 { width: 520px; height: 520px; background: #005544; top: -120px; left: -120px; }
-  .b2 { width: 420px; height: 420px; background: #003366; bottom: -80px; right: -80px; }
-  .b3 { width: 300px; height: 300px; background: #00442a; top: 50%; left: 55%; }
+    .label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
 
-  .page {
-    position: relative; z-index: 1;
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 60px 20px 80px;
-  }
+    .divider {
+      width: 36px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.45;
+      margin: 0 auto 56px;
+    }
 
-  .title {
-    font-size: clamp(1.8rem, 5vw, 3rem);
-    font-weight: 800; letter-spacing: .02em;
-    background: linear-gradient(120deg, #00e5c3, #00ff88 45%, #0099ff 80%, #00e5c3);
-    background-size: 200% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 4s linear infinite;
-    text-align: center;
-    margin-bottom: 12px;
-  }
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 16px 40px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      letter-spacing: 0.3px;
+      font-family: inherit;
+    }
+    .btn:hover { background: #a57a6b; transform: translateY(-2px); }
 
-  .subtitle {
-    color: rgba(0,229,195,.6);
-    font-size: 1rem;
-    text-align: center;
-    margin-bottom: 60px;
-    letter-spacing: .04em;
-  }
+    .btn-ghost {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-ghost:hover { background: var(--accent); color: #fff; }
 
-  @keyframes shimmer { to { background-position: 200% center; } }
+    section { padding: 96px 0; }
+    .alt { background: var(--bg-alt); }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 28px;
-    width: 100%;
-    max-width: 900px;
-  }
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      letter-spacing: -0.8px;
+      margin-bottom: 16px;
+    }
 
-  .card {
-    background: rgba(0,229,195,.04);
-    border: 1px solid rgba(0,229,195,.15);
-    border-radius: 20px;
-    padding: 36px 32px;
-    text-decoration: none;
-    color: inherit;
-    display: flex; flex-direction: column; gap: 14px;
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, border-color .3s;
-    backdrop-filter: blur(8px);
-  }
-  .card:hover {
-    transform: translateY(-6px) scale(1.02);
-    border-color: rgba(0,229,195,.5);
-    box-shadow: 0 20px 48px rgba(0,229,195,.12);
-  }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
 
-  .card-icon { font-size: 2.4rem; line-height: 1; }
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(247,244,239,0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 8px 20px;
+      border-radius: 2px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; }
+    .nav-burger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-burger span { display: block; width: 22px; height: 2px; background: var(--text); margin: 5px 0; border-radius: 2px; transition: all 0.3s; }
+    .mobile-menu { display: none; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); padding: 16px 24px 24px; gap: 0; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 15px; color: var(--text); padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .mobile-menu .btn { margin-top: 16px; text-align: center; }
 
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    background: linear-gradient(120deg, #00e5c3, #00ff88);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    /* HERO */
+    #hero {
+      padding-top: 140px;
+      padding-bottom: 96px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-title {
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+      line-height: 1.15;
+    }
+    .hero-title em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 17px; color: var(--muted); line-height: 1.75; margin-bottom: 40px; max-width: 440px; }
+    .hero-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero-trust { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+    .hero-trust::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent); opacity: 0.6; flex-shrink: 0; }
 
-  .card-desc {
-    font-size: .93rem;
-    color: rgba(224,255,248,.55);
-    line-height: 1.6;
-  }
+    .hero-visual { display: flex; justify-content: center; }
+    .photo-frame { position: relative; width: 380px; height: 460px; }
+    .photo-bg { position: absolute; inset: 0; background: var(--soft); border-radius: 4px; }
+    .photo-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+    .photo-circle {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: var(--accent); opacity: 0.75;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 700; color: #fff;
+    }
+    .photo-label { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
+    .photo-badge {
+      position: absolute; bottom: -20px; left: -20px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 32px rgba(184,138,122,0.14);
+    }
+    .photo-badge strong { display: block; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .photo-badge span { font-size: 12px; color: var(--muted); }
 
-  .card-link {
-    margin-top: auto;
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: .85rem;
-    color: #00e5c3;
-    opacity: .7;
-    transition: opacity .2s;
-  }
-  .card:hover .card-link { opacity: 1; }
-</style>
+    /* PROBLEM */
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .problem-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 28px;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .problem-card:hover { box-shadow: 0 8px 32px rgba(184,138,122,0.1); transform: translateY(-2px); }
+    .problem-num { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--accent); opacity: 0.6; margin-bottom: 14px; }
+    .problem-card p { font-size: 15px; line-height: 1.65; }
+    .problem-outro { text-align: center; font-size: 17px; color: var(--muted); font-style: italic; margin-top: 48px; }
+
+    /* SOLUTION */
+    .solution-lead {
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700; letter-spacing: -0.8px; line-height: 1.3;
+      text-align: center; max-width: 680px; margin: 0 auto 56px;
+    }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .tool-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 32px 28px;
+      box-shadow: 0 2px 40px rgba(184,138,122,0.05);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .tool-card:hover { box-shadow: 0 12px 48px rgba(184,138,122,0.12); transform: translateY(-3px); }
+    .tool-num { font-size: 11px; font-weight: 600; letter-spacing: 3px; color: var(--accent); margin-bottom: 16px; }
+    .tool-card h3 { font-size: 17px; margin-bottom: 10px; }
+    .tool-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+    /* PROCESS */
+    .steps-wrap { max-width: 680px; margin: 0 auto; }
+    .step { display: grid; grid-template-columns: 56px 1fr; gap: 28px; align-items: flex-start; position: relative; }
+    .step:not(:last-child) { padding-bottom: 40px; }
+    .step:not(:last-child)::after {
+      content: ''; position: absolute; left: 27px; top: 56px; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+    .step-body { padding-top: 10px; }
+    .step-body h3 { font-size: 18px; margin-bottom: 8px; }
+    .step-body p { font-size: 15px; color: var(--muted); line-height: 1.65; }
+
+    /* CASES */
+    .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .case-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px;
+      padding: 36px 32px; position: relative;
+    }
+    .case-tag {
+      position: absolute; top: 28px; right: 28px;
+      background: var(--soft); color: var(--accent);
+      font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 2px;
+    }
+    .case-quote { font-size: 48px; color: var(--soft); line-height: 1; font-family: Georgia, serif; margin-bottom: -4px; }
+    .case-text { font-size: 15px; line-height: 1.75; margin-bottom: 24px; padding-right: 80px; }
+    .case-author { display: flex; align-items: center; gap: 12px; }
+    .case-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+    }
+    .case-name { font-size: 14px; font-weight: 600; }
+    .case-city { font-size: 12px; color: var(--muted); }
+
+    /* PACKAGES */
+    .packages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+    .pkg {
+      background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 36px 28px;
+      display: flex; flex-direction: column;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .pkg:hover { box-shadow: 0 12px 48px rgba(184,138,122,0.12); transform: translateY(-4px); }
+    .pkg.featured { border-color: var(--accent); position: relative; }
+    .pkg-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 4px 16px; border-radius: 2px; white-space: nowrap;
+    }
+    .pkg-label { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .pkg-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .pkg-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .pkg-list { list-style: none; margin-bottom: 28px; flex: 1; }
+    .pkg-list li {
+      font-size: 14px; padding: 9px 0; border-bottom: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .pkg-list li::before {
+      content: ''; display: inline-block; width: 4px; height: 4px;
+      border-radius: 50%; background: var(--accent); margin-top: 9px; flex-shrink: 0;
+    }
+    .pkg-price { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+    .pkg-price small { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .pkg-roi { text-align: center; margin-top: 32px; font-size: 14px; color: var(--muted); }
+    .pkg-roi strong { color: var(--text); }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .about-photo {
+      width: 100%; max-width: 360px; aspect-ratio: 3/4; background: var(--soft); border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    }
+    .about-text h2 { font-size: clamp(1.6rem, 2.5vw, 2.2rem); letter-spacing: -0.8px; margin-bottom: 24px; }
+    .about-text p { font-size: 16px; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+    .about-text p strong { color: var(--text); }
+
+    /* REVIEWS */
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .review-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 28px; }
+    .review-text { font-size: 15px; line-height: 1.75; font-style: italic; margin-bottom: 20px; }
+    .review-author { display: flex; align-items: center; gap: 12px; }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+    }
+    .review-name { font-size: 14px; font-weight: 600; }
+    .review-city { font-size: 12px; color: var(--muted); }
+
+    /* FAQ */
+    .faq-wrap { max-width: 720px; margin: 0 auto; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      width: 100%; background: none; border: none; text-align: left;
+      padding: 22px 0; font-size: 16px; font-weight: 600; color: var(--text);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      transition: color 0.2s; font-family: inherit;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-icon {
+      width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 14px; color: var(--accent);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .faq-item.open .faq-icon { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .faq-a {
+      font-size: 15px; color: var(--muted); line-height: 1.75;
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 22px; }
+
+    /* FINAL CTA */
+    #cta { background: var(--text); color: #fff; text-align: center; padding: 120px 0; }
+    #cta .label { color: rgba(255,255,255,0.35); }
+    #cta h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); letter-spacing: -1px; margin-bottom: 16px; color: #fff; }
+    #cta p { font-size: 17px; color: rgba(255,255,255,0.5); margin-bottom: 40px; }
+    #cta .btn { background: var(--accent); }
+    #cta .btn:hover { background: #a57a6b; }
+    .cta-note { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3); }
+
+    /* FOOTER */
+    footer { padding: 36px 0; background: var(--bg); border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-size: 13px; color: var(--muted); }
+    .footer-tg { font-size: 13px; color: var(--accent); }
+    .footer-tg:hover { text-decoration: underline; }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .packages-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 64px 0; }
+      #hero { padding-top: 96px; padding-bottom: 64px; min-height: auto; }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { order: -1; }
+      .photo-frame { width: 260px; height: 320px; margin: 0 auto; }
+      .photo-badge { bottom: -12px; left: -10px; padding: 12px 16px; }
+      .photo-badge strong { font-size: 20px; }
+      .hero-actions { align-items: stretch; }
+      .btn { text-align: center; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-photo { max-width: 100%; aspect-ratio: 4/3; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-burger { display: block; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      section { padding: 48px 0; }
+      .case-text { padding-right: 0; }
+      .case-tag { position: static; display: inline-block; margin-bottom: 12px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="blob b1"></div>
-<div class="blob b2"></div>
-<div class="blob b3"></div>
-<canvas id="cvs"></canvas>
-
-<div class="page">
-  <h1 class="title">Мои проекты</h1>
-  <p class="subtitle">Всё в одном месте — кликайте и смотрите</p>
-
-  <div class="grid">
-
-    <a class="card" href="vizitka_kalkulyator.html">
-      <div class="card-icon">💼</div>
-      <div class="card-title">Визитка</div>
-      <div class="card-desc">Личная цифровая визитная карточка с голографическим дизайном и анимацией.</div>
-      <span class="card-link">Открыть →</span>
-    </a>
-
-    <a class="card" href="landing_kalkulyator.html">
-      <div class="card-icon">🧮</div>
-      <div class="card-title">Умные калькуляторы</div>
-      <div class="card-desc">Лендинг по разработке умных калькуляторов для бизнеса.</div>
-      <span class="card-link">Открыть →</span>
-    </a>
-
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">Ольга &middot; Возврат клиентов для косметологов</span>
+    <ul class="nav-links">
+      <li><a href="#solution">Что делаю</a></li>
+      <li><a href="#process">Как работаю</a></li>
+      <li><a href="#packages">Пакеты</a></li>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#faq">Вопросы</a></li>
+    </ul>
+    <a href="https://t.me/olga1222" target="_blank" class="nav-cta">Написать в Telegram</a>
+    <button class="nav-burger" onclick="toggleMenu()" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
   </div>
-</div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#solution" onclick="closeMenu()">Что делаю</a>
+    <a href="#process" onclick="closeMenu()">Как работаю</a>
+    <a href="#packages" onclick="closeMenu()">Пакеты</a>
+    <a href="#about" onclick="closeMenu()">Обо мне</a>
+    <a href="#faq" onclick="closeMenu()">Вопросы</a>
+    <a href="https://t.me/olga1222" target="_blank" class="btn">Написать в Telegram</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="reveal">
+        <span class="label">Специалист по возврату клиентов для косметологов</span>
+        <h1 class="hero-title">
+          Ваши клиенты уходят и <em>не возвращаются.</em><br>
+          Я настрою систему, которая вернёт их сама
+        </h1>
+        <p class="hero-sub">
+          Создаю сайты, квизы, чат-боты и автоматические напоминания для косметологов — всё под ключ, без вашего участия
+        </p>
+        <div class="hero-actions">
+          <a href="https://t.me/olga1222" target="_blank" class="btn">
+            Узнать, что подойдёт моему кабинету
+          </a>
+          <span class="hero-trust">Уже работает у 20+ косметологов</span>
+        </div>
+      </div>
+      <div class="hero-visual reveal" style="transition-delay:0.15s">
+        <div class="photo-frame">
+          <div class="photo-bg"></div>
+          <div class="photo-content">
+            <div class="photo-circle">О</div>
+            <span class="photo-label">Здесь будет<br>фото Ольги</span>
+          </div>
+          <div class="photo-badge">
+            <strong>20+</strong>
+            <span>косметологов<br>уже с системой</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Узнаёшь себя?</span>
+      <h2 class="section-title">Знакомые ситуации?</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card reveal">
+        <div class="problem-num">01</div>
+        <p>Клиенты пишут в мессенджерах вечером — и пропадают без записи</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.1s">
+        <div class="problem-num">02</div>
+        <p>Сделала процедуру — и клиентка больше не вернулась. Хотя всё прошло отлично</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.2s">
+        <div class="problem-num">03</div>
+        <p>Нет времени напоминать каждой клиентке вручную — работаешь руками, не системой</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.3s">
+        <div class="problem-num">04</div>
+        <p>Сайта нет или он давно устарел — новые клиенты не находят тебя</p>
+      </div>
+      <div class="problem-card reveal" style="transition-delay:0.4s">
+        <div class="problem-num">05</div>
+        <p>Каждый месяц не знаешь, будет ли запись — живёшь на сарафане и удаче</p>
+      </div>
+    </div>
+    <p class="problem-outro reveal">Работаешь руками, а система — нет. Давай это исправим.</p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Что я делаю</span>
+      <div class="divider"></div>
+    </div>
+    <p class="solution-lead reveal">
+      Я не делаю «просто сайт». Я строю систему, которая работает за тебя 24/7 и возвращает клиентов сама
+    </p>
+    <div class="tools-grid">
+      <div class="tool-card reveal">
+        <div class="tool-num">01</div>
+        <h3>Сайт-визитка</h3>
+        <p>Первое впечатление, которое записывает клиентов само. Без звонков и долгих переписок.</p>
+      </div>
+      <div class="tool-card reveal" style="transition-delay:0.1s">
+        <div class="tool-num">02</div>
+        <h3>Квиз для клиентов</h3>
+        <p>Отбирает тёплых клиентов и собирает заявки, пока ты на процедуре.</p>
+      </div>
+      <div class="tool-card reveal" style="transition-delay:0.2s">
+        <div class="tool-num">03</div>
+        <h3>Чат-бот в Telegram</h3>
+        <p>Отвечает на вопросы и берёт запись в любое время суток — без твоего участия.</p>
+      </div>
+      <div class="tool-card reveal" style="transition-delay:0.3s">
+        <div class="tool-num">04</div>
+        <h3>Автоматические напоминания</h3>
+        <p>Ни одного потерянного клиента. Никакой ручной переписки. Система делает всё сама.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Как это происходит</span>
+      <h2 class="section-title">Четыре шага — и система работает</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="steps-wrap">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Созвон</h3>
+          <p>Обсуждаем твою ситуацию и клиентскую базу. 30–60 минут — и я понимаю, что именно нужно твоему кабинету.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Сборка</h3>
+          <p>Настраиваю сайт, квиз и бот под твою нишу и стиль. Ты только отвечаешь на вопросы о своей работе.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Запуск</h3>
+          <p>Система начинает работать. Клиенты получают первые касания — напоминания, приглашения, информацию о записи.</p>
+        </div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Результат</h3>
+          <p>Через 2–4 недели видим первые возвращения и новые записи. Система работает, пока ты занимаешься клиентами.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section id="cases">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Результаты</span>
+      <h2 class="section-title">Что происходит с записью после запуска системы</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="cases-grid">
+      <div class="case-card reveal">
+        <div class="case-tag">+23 заявки</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Настроила квиз и чат-бот. За первый месяц — 23 заявки без рекламы. Раньше приходило 4–5 с сарафана.</p>
+        <div class="case-author">
+          <div class="case-avatar">А</div>
+          <div>
+            <div class="case-name">Анна</div>
+            <div class="case-city">Минск · косметолог-эстетист</div>
+          </div>
+        </div>
+      </div>
+      <div class="case-card reveal" style="transition-delay:0.12s">
+        <div class="case-tag">11 возвратов</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Бот берёт запись без меня, даже ночью. За первый месяц вернулись 11 клиентов, которых не видела больше года.</p>
+        <div class="case-author">
+          <div class="case-avatar">М</div>
+          <div>
+            <div class="case-name">Марина</div>
+            <div class="case-city">Киев · владелец кабинета</div>
+          </div>
+        </div>
+      </div>
+      <div class="case-card reveal" style="transition-delay:0.24s">
+        <div class="case-tag">запись на 3 нед.</div>
+        <div class="case-quote">&ldquo;</div>
+        <p class="case-text">Раньше — хаос в мессенджерах. Теперь система сама напоминает и ведёт клиентов. Запись расписана на 3 недели вперёд.</p>
+        <div class="case-author">
+          <div class="case-avatar">Е</div>
+          <div>
+            <div class="case-name">Екатерина</div>
+            <div class="case-city">Москва · бьюти-студия</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="packages" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Пакеты</span>
+      <h2 class="section-title">Выбери, с чего начать</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="packages-grid">
+      <div class="pkg reveal">
+        <div class="pkg-label">Разбор</div>
+        <div class="pkg-title">Созвон и план</div>
+        <div class="pkg-desc">Для тех, кто хочет разобраться — что нужно кабинету — прежде чем вкладывать деньги</div>
+        <ul class="pkg-list">
+          <li>Созвон 60 минут</li>
+          <li>Письменный план системы</li>
+          <li>Разбор ситуации с клиентами</li>
+          <li>Рекомендации по инструментам</li>
+        </ul>
+        <div class="pkg-price">3 000 руб. <small>/ бесплатно первым 3</small></div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn btn-ghost">Записаться на разбор</a>
+      </div>
+
+      <div class="pkg featured reveal" style="transition-delay:0.12s">
+        <div class="pkg-badge">Рекомендую</div>
+        <div class="pkg-label">Старт</div>
+        <div class="pkg-title">Первый шаг в онлайн</div>
+        <div class="pkg-desc">Для тех, кто выходит в онлайн или хочет заменить хаос в мессенджерах на работающий инструмент</div>
+        <ul class="pkg-list">
+          <li>Сайт-визитка под твой стиль</li>
+          <li>Квиз для подбора процедуры</li>
+          <li>Настройка под твою нишу</li>
+          <li>Мобильная версия</li>
+          <li>Правки в течение 1 месяца</li>
+        </ul>
+        <div class="pkg-price">от 15 000 руб.</div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn">Хочу «Старт»</a>
+      </div>
+
+      <div class="pkg reveal" style="transition-delay:0.24s">
+        <div class="pkg-label">Система</div>
+        <div class="pkg-title">Полная система под ключ</div>
+        <div class="pkg-desc">Полная система возврата клиентов — сайт, бот, напоминания. Работает без твоего участия</div>
+        <ul class="pkg-list">
+          <li>Сайт-визитка</li>
+          <li>Квиз для клиентов</li>
+          <li>Чат-бот в Telegram</li>
+          <li>Автоматические напоминания</li>
+          <li>База клиентов</li>
+          <li>Правки в течение 1 месяца</li>
+        </ul>
+        <div class="pkg-price">от 35 000 руб.</div>
+        <a href="https://t.me/olga1222" target="_blank" class="btn">Хочу полную систему</a>
+      </div>
+    </div>
+    <p class="pkg-roi reveal"><strong>3 вернувшихся клиента</strong> в месяц = окупаемость пакета «Старт»</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <div class="photo-circle" style="width:80px;height:80px;font-size:28px;">О</div>
+        <span class="photo-label">Здесь будет<br>фото Ольги</span>
+      </div>
+      <div class="about-text reveal" style="transition-delay:0.15s">
+        <span class="label">Обо мне</span>
+        <h2>Привет, я Ольга</h2>
+        <p>Помогаю косметологам <strong>перестать терять клиентов</strong> через хаос в мессенджерах и отсутствие системы.</p>
+        <p>Работаю только с косметологами — знаю эту нишу изнутри. Настраиваю системы, которые работают сами: напоминают, записывают, удерживают.</p>
+        <p>Создаю сайты, квизы, чат-боты и автоматизацию — всё под ключ. Ты продолжаешь работать руками. <strong>Система работает за тебя.</strong></p>
+        <a href="https://t.me/olga1222" target="_blank" class="btn" style="margin-top:16px">Написать Ольге в Telegram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Отзывы</span>
+      <h2 class="section-title">Что говорят косметологи</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <p class="review-text">«Я боялась, что будет сложно. Ольга всё объяснила простым языком. Теперь клиенты возвращаются сами — я даже не замечаю, как это работает.»</p>
+        <div class="review-author">
+          <div class="review-avatar">Н</div>
+          <div><div class="review-name">Наталья</div><div class="review-city">Санкт-Петербург</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.1s">
+        <p class="review-text">«Запись выросла в 2 раза за первый месяц. Больше не трачу время на переписки — бот делает всё сам.»</p>
+        <div class="review-author">
+          <div class="review-avatar">О</div>
+          <div><div class="review-name">Ольга</div><div class="review-city">Казань</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.2s">
+        <p class="review-text">«Думала, это для больших студий. Оказалось — идеально для одного мастера. Клиенты, которых не видела год — написали сами.»</p>
+        <div class="review-author">
+          <div class="review-avatar">И</div>
+          <div><div class="review-name">Ирина</div><div class="review-city">Минск</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:0.3s">
+        <p class="review-text">«Квиз собирает заявки, пока я на процедуре. За месяц — 17 новых обращений без рекламы. Не верила, что так бывает.»</p>
+        <div class="review-author">
+          <div class="review-avatar">Т</div>
+          <div><div class="review-name">Татьяна</div><div class="review-city">Новосибирск</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="label">Вопросы</span>
+      <h2 class="section-title">Спрашивают чаще всего</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Я не разбираюсь в технологиях — это сложно?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Нет. Я беру на себя всё техническое. Ты только отвечаешь на вопросы о своей работе — остальное делаю я.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Сколько времени займёт настройка?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Обычно 5–7 рабочих дней с момента созвона до запуска. Зависит от выбранного пакета.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли платить за сервисы отдельно?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Да, небольшая оплата за чат-бот — обычно 300–500 руб./мес. Всё остальное входит в стоимость. Я заранее объясняю все расходы.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Как быстро увижу первые результаты?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Первые возвращения клиентов обычно через 2–4 недели после запуска. Зависит от размера клиентской базы.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Мне нужна реклама, чтобы это работало?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Нет. Система работает с твоей существующей базой — возвращает тех, кто уже был у тебя. Реклама не нужна на старте.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Что если клиенты не будут пользоваться ботом?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Настраиваю так, чтобы было просто и удобно. Если что-то не работает — дорабатываю бесплатно в течение месяца.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Можно сначала просто поговорить?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Конечно! Для этого есть бесплатный разбор — созвон 30 минут, без обязательств. Напиши в Telegram, договоримся.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="reveal">
+      <span class="label">Начнём?</span>
+      <h2>Готова, чтобы клиенты возвращались сами?</h2>
+      <p>Начнём с бесплатного разбора — 30 минут, без обязательств</p>
+      <a href="https://t.me/olga1222" target="_blank" class="btn">Написать Ольге в Telegram</a>
+      <p class="cta-note">Отвечу в течение 2 часов &nbsp;&middot;&nbsp; Без давления и продаж</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2025 Ольга &middot; Система возврата клиентов для косметологов</span>
+      <a href="https://t.me/olga1222" target="_blank" class="footer-tg">Telegram: @olga1222</a>
+    </div>
+  </div>
+</footer>
 
 <script>
-  const cvs = document.getElementById('cvs');
-  const ctx = cvs.getContext('2d');
-  let W, H;
-  function resize() { W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
-  resize(); addEventListener('resize', resize);
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  const SYMBOLS = ['$','%','+','−','×','÷','=','∑','√','π','∞','€','₽','#','∫','Δ','≈','≠','²','³'];
-  const COLS = ['rgba(0,229,195,', 'rgba(0,255,136,', 'rgba(0,153,255,', 'rgba(0,200,180,'];
-
-  class MathSymbol {
-    constructor(scatter) { this.reset(scatter); }
-    reset(scatter) {
-      this.x   = Math.random() * W;
-      this.y   = scatter ? Math.random() * H : H + 30;
-      this.sym = SYMBOLS[Math.random() * SYMBOLS.length | 0];
-      this.sz  = Math.random() * 18 + 10;
-      this.vy  = -(Math.random() * .55 + .2);
-      this.vx  = (Math.random() - .5) * .25;
-      this.rot = Math.random() * Math.PI * 2;
-      this.vr  = (Math.random() - .5) * .012;
-      this.col = COLS[Math.random() * COLS.length | 0];
-      this.life = 0;
-      this.max  = Math.random() * 260 + 140;
-    }
-    tick() {
-      this.x += this.vx; this.y += this.vy;
-      this.rot += this.vr; this.life++;
-      const t = this.life / this.max;
-      this.a = (t < .15 ? t / .15 : t > .80 ? (1 - t) / .20 : 1) * .5;
-      if (this.life >= this.max) this.reset(false);
-    }
-    draw() {
-      ctx.save();
-      ctx.globalAlpha = this.a;
-      ctx.font = `${this.sz}px monospace`;
-      ctx.fillStyle = this.col + this.a + ')';
-      ctx.shadowColor = this.col + '0.6)';
-      ctx.shadowBlur = 8;
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.rot);
-      ctx.fillText(this.sym, 0, 0);
-      ctx.restore();
+  // FAQ
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-icon').textContent = '+';
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.querySelector('.faq-icon').textContent = '×';
     }
   }
 
-  const dots = Array.from({length: 50}, () => new MathSymbol(true));
-
-  (function loop() {
-    ctx.clearRect(0, 0, W, H);
-    dots.forEach(d => { d.tick(); d.draw(); });
-    requestAnimationFrame(loop);
-  })();
+  // Mobile menu
+  function toggleMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
 </script>
 </body>
 </html>
