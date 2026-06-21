@@ -53,8 +53,8 @@
 * `index.html` — главный лендинг-портфолио (готов): герой, статистика, проблема, решение, процесс, кейсы, тарифы, обо мне, отзывы, FAQ, форма, CTA. Фото Ольги встроено base64.
 * `landing-cosmetolog.html` — заморожен, референсный вариант лендинга
 * `vizitka-cosmetolog.html` — визитка Ольги как AI-консультанта: фото, специализация, контакты
-* `vizitka_kalkulyator.html` — калькулятор (тёмная тема, готов)
-* `landing_kalkulyator.html` — лендинг калькулятора (тёмная тема, готов)
+* `vizitka_kalkulyator.html` — перенесён в отдельный проект kalkulyator-landing-vizitka
+* `landing_kalkulyator.html` — перенесён в отдельный проект kalkulyator-landing-vizitka
 
 ## Документация
 

@@ -3,8 +3,8 @@
 ## Готово
 
 * [x] Главная страница с карточками проектов (index.html)
-* [x] Личная визитка с фото и анимацией (vizitka_kalkulyator.html)
-* [x] Лендинг «Умные калькуляторы для бизнеса» (landing_kalkulyator.html)
+* [x] Личная визитка с фото и анимацией (перенесена в kalkulyator-landing-vizitka)
+* [x] Лендинг «Умные калькуляторы для бизнеса» (перенесён в kalkulyator-landing-vizitka)
 * [x] Визитка для косметологов — тёплая палитра (vizitka-cosmetolog.html)
 * [x] Лендинг для косметологов — AI-система возврата клиентов (landing-cosmetolog.html)
 
