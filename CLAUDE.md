@@ -44,8 +44,7 @@
 
 | Файл | Что содержит |
 |---|---|
-| `brief.md` | ТЗ на лендинг |
-| `brief-miniapp.md` | План разработки Telegram Mini App (11 экранов) |
+| `brief.md` | ТЗ на лендинг + план разработки Telegram Mini App (11 экранов) |
 | `research.md` | Исследование рынка, тренды, анализ Mini App, экспертные оценки |
 | `plan-cosmetolog.md` | План задач по всему проекту с чекбоксами |
 | `project-cosmetolog.md` | Описание продукта, аудитория, что сделано |
@@ -54,10 +53,10 @@
 - Лендинг-портфолио Ольги: 13 секций, адаптив от 320px, фото base64
 - Визитка консультанта (vizitka-cosmetolog.html)
 - Исследование рынка Mini App: 5 примеров, UX-паттерны, экспертная оценка
-- План разработки Telegram Mini App витрины Ольги (brief-miniapp.md)
+- План разработки Telegram Mini App витрины Ольги (brief.md, Часть 2)
 
 ## Что ещё не сделано
-- Telegram Mini App — витрина Ольги (по brief-miniapp.md)
+- Telegram Mini App — витрина Ольги (по brief.md, Часть 2)
 - Telegram-бот для приёма заявок из Mini App
 - Реальные кейсы и отзывы (когда появятся клиенты)
 
@@ -71,6 +70,5 @@
 - Без эмодзи
 
 ## Документация
-- [brief.md](brief.md) — ТЗ на лендинг
-- [brief-miniapp.md](brief-miniapp.md) — план разработки Telegram Mini App
+- [brief.md](brief.md) — ТЗ на лендинг + план разработки Telegram Mini App
 - [research.md](research.md) — исследование рынка и экспертные оценки
