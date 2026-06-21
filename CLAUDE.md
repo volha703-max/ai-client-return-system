@@ -15,9 +15,10 @@
 ### Портфолио Ольги (светлая тема)
 - Главная: https://volha703-max.github.io/ai-client-return-system/index.html
 
-### Калькуляторы (тёмная тема — бирюза)
-- Визитка: https://volha703-max.github.io/ai-client-return-system/vizitka_kalkulyator.html
-- Лендинг: https://volha703-max.github.io/ai-client-return-system/landing_kalkulyator.html
+### Калькуляторы (отдельный проект — тёмная тема)
+- Визитка: https://volha703-max.github.io/kalkulyator-landing-vizitka/vizitka_kalkulyator.html
+- Лендинг: https://volha703-max.github.io/kalkulyator-landing-vizitka/landing_kalkulyator.html
+- Репозиторий: https://github.com/volha703-max/kalkulyator-landing-vizitka
 
 ### Проект «Косметолог» (светлая тема)
 - Лендинг: https://volha703-max.github.io/ai-client-return-system/landing-cosmetolog.html
@@ -37,8 +38,8 @@
 | `index.html` | Готов | Светлая — портфолио Ольги (13 секций, фото base64) |
 | `landing-cosmetolog.html` | ЗАМОРОЖЕН — не трогать | Светлая — для косметолога |
 | `vizitka-cosmetolog.html` | Готов (base64 фото!) | Светлая — для косметолога |
-| `vizitka_kalkulyator.html` | Готов | Тёмная — калькулятор |
-| `landing_kalkulyator.html` | Готов | Тёмная — калькулятор |
+| `vizitka_kalkulyator.html` | Перенесён в kalkulyator-landing-vizitka | — |
+| `landing_kalkulyator.html` | Перенесён в kalkulyator-landing-vizitka | — |
 
 ## Документация проекта
 
