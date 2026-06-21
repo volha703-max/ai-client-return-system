@@ -12,6 +12,10 @@
 
 ## Живые ссылки
 
+### Netlify (основной хостинг)
+- Проект: https://app.netlify.com/projects/ai-system-cosmetolog/configuration/general
+
+### GitHub Pages (резервный хостинг)
 ### Портфолио Ольги (светлая тема)
 - Главная: https://volha703-max.github.io/ai-client-return-system/index.html
 
